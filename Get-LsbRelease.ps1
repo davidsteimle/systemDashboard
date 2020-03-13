@@ -7,11 +7,11 @@ class lsb {
     [string]$Codename
 }
 
-$x = lsb_release -a
+$lsbRaw = try{ lsb_release -a } catch { return }
 
 $Result = [lsb]::new()
 
-foreach($y in $x){
+foreach($y in $lsbRaw){
     $a = $y.Split(':')
     $a[0] = $a[0].Replace(" ","")
     $Result.$($a[0]) = $($a[1].Trim())
