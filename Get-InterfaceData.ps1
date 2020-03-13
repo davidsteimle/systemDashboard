@@ -11,13 +11,12 @@ class iface {
 
 $interfaceNames = $(ls /sys/class/net).Split(" ")
 
-$Interfaces = [System.Collections.ArrayList]::new
+$Interfaces = New-Object -TypeName System.Collections.ArrayList
 
 foreach($interface in $interfaceNames){
     if($interface -ne 'lo'){
-        $ThisInterface =  New-Object -TypeName iface
+        $ThisInterface = [iface]::new
         $Result = ifconfig $interface
-        # https://vexx32.github.io/2018/11/08/Named-Regex-Matches-PSCustomObject/
         $MatchPattern = @(
             '(?<hwaddr>HWaddr [a-fA-F0-9]{1,2}:[a-fA-F0-9]{1,2}:[a-fA-F0-9]{1,2}:[a-fA-F0-9]{1,2}:[a-fA-F0-9]{1,2}:[a-fA-F0-9]{1,2})'
             '(?<inet>inet addr:[0-9]{1,}\.[0-9]{1,}\.[0-9]{1,}\.[0-9]{1,})'
@@ -34,4 +33,5 @@ foreach($interface in $interfaceNames){
         $ThisInterface.IPv6 = $(($Matches.inet6).Replace("inet6 addr: ",""))
         $ThisInterface.Scope = $(($Matches.scope).Replace("Scope:",""))
     }
+    $Interfaces.Add($ThisInterface)
 }
